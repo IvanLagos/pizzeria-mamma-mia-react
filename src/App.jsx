@@ -3,7 +3,7 @@ import './App.css'
 import NavBarComponent from './assets/components/navbar/NavBarComponent'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import HomeComponent from './assets/components/home/HomeComponent';
-import FooterComponent from './assets/components/footer/footerComponent';
+import FooterComponent from './assets/components/footer/FooterComponent';
 
 const App = () => { 
   return (
