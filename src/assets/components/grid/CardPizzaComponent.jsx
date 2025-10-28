@@ -13,8 +13,8 @@ const CardPizzaComponent = ({ name, price, ingredients, img }) => {
 
         <hr className='mb-2' style={{ margin: "2px 0" }} />
 
-        <Card.Text className="mb-0">
-          <p>Ingredientes:</p>
+        <Card.Text className="mb-2">
+          Ingredientes:
         </Card.Text>
 
         <div className="mb-1" style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
