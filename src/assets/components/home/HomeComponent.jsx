@@ -1,5 +1,5 @@
 import React from 'react'
-import HeaderComponent from '../header/headerComponent'
+import HeaderComponent from '../header/HeaderComponent'
 import CardPizza from "../grid/CardPizzaComponent";
 import { Container, Row, Col } from "react-bootstrap";
 
