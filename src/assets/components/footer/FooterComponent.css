@@ -1,0 +1,25 @@
+footer {
+  text-align: center;
+  padding: 2rem;
+  background-color: #333;
+  color: white;
+}
+
+.footer-social {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.footer-social a {
+  color: rgb(152, 151, 151);
+  text-decoration: none;
+  font-weight: 400;
+  transition: color 0.3s;
+}
+
+.footer-social a:hover {
+  color: white;
+}

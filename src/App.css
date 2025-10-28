@@ -1,0 +1,44 @@
+
+.header-container {
+  background-image: url(../src/assets/imgs/Header.jpg);
+  background-size: cover;
+  position: relative;
+  background-position: center;
+  text-align: center;
+  padding: 4rem;
+}
+
+.header-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+.header-container h1,
+.header-container p {
+  position: relative;
+  z-index: 2;
+}
+
+.header-container h1 {
+  font-size: 3rem;
+  color: white;
+  margin-bottom: 1rem;
+  text-shadow: 5px 5px 5px black;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+.header-container p {
+  color: white;
+}
+
+.header-container hr {
+  color: white;
+}
