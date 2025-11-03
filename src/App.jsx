@@ -4,8 +4,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import NavBarComponent from './assets/components/navbar/NavBarComponent';
 import HomeComponent from './assets/components/home/HomeComponent';
 import FooterComponent from './assets/components/footer/FooterComponent';
-import Register from './assets/components/register/Register';
-import Login from './assets/components/login/Login';
+import RegisterComponent from './assets/components/register/RegisterComponent';
+import LoginComponent from './assets/components/login/LoginComponent';
 
 function App() {
   const [vista, setVista] = useState("home");
@@ -16,8 +16,8 @@ function App() {
 
       <div className="content-wrapper">
         {vista === "home" && <HomeComponent />}
-        {vista === "register" && <Register />}
-        {vista === "login" && <Login />}
+        {vista === "register" && <RegisterComponent />}
+        {vista === "login" && <LoginComponent />}
       </div>
 
       <FooterComponent />
