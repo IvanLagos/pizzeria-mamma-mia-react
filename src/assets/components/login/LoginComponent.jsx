@@ -29,12 +29,12 @@ const LoginComponent = () => {
     }
 
     if (email === VALID_EMAIL && password === VALID_PASS) {
-      setMensaje("✅ Usuario y contraseña correctos");
+      setMensaje("Usuario y contraseña correctos");
       setTipo("success");
       setIsLogged(true);
-      // setMensaje("¡Inicio de sesión exitoso!");
+
     } else {
-      setMensaje("❌ Usuario o contraseña incorrectos");
+      setMensaje("Usuario o contraseña incorrectos");
       setTipo("danger");
       setIsLogged(false);
     }
