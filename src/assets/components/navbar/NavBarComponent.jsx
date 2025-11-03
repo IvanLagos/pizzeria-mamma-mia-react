@@ -15,7 +15,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 
-const NavBarComponent = () => {
+const NavBarComponent = ({ cambiarVista }) => {
   const total = 25000;
   const token = false;
 
@@ -65,11 +65,11 @@ const NavBarComponent = () => {
               // Usuario NO logueado
 
               <>
-                <Nav.Link href="#login" className="navlink-lg-white">
+                <Nav.Link onClick={() => cambiarVista("login")} className="navlink-lg-white">
                   <FontAwesomeIcon icon={faRightToBracket} style={{ marginRight: 8 }} />
                   Login
                 </Nav.Link>
-                <Nav.Link href="#register" className="navlink-lg-white">
+                <Nav.Link onClick={() => cambiarVista("register")} className="navlink-lg-white">
                   <FontAwesomeIcon icon={faUserPlus} style={{ marginRight: 8 }} />
                   Register
                 </Nav.Link>
