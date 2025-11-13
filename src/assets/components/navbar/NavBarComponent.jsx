@@ -15,28 +15,31 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 
-const NavBarComponent = ({ cambiarVista }) => {
-  const total = 25000;
-  const token = false;
+const NavBarComponent = ({ cambiarVista, total = 0, token = false }) => {
 
   return (
     <Navbar expand="lg" className="navbar" bg="dark" data-bs-theme="dark">
       <Container>
-        <Navbar.Brand className="brand" href="index.html">
-          <img
-            src={logoTienda}
-            width="50px"
-            className="d-inline-block align-top"
-            alt="logo"
-          />
+        <Navbar.Brand
+          className="brand"
+          role="button"
+          style={{ cursor: 'pointer' }}
+          onClick={() => cambiarVista('home')}
+        >
+          <img src={logoTienda} width="50px" alt="logo" />
         </Navbar.Brand>
 
-            <div className="d-flex order-lg-1 ms-auto me-2">
-              <Button variant="outline-light" className="btn-lg-text">
-                <FontAwesomeIcon icon={faCartShopping} style={{ marginRight: 8 }} />
-                Total: ${formatCLP(total)}
-              </Button>
-            </div>
+        <div className="d-flex order-lg-1 ms-auto me-2">
+          <Button
+            variant="outline-light"
+            className="btn-lg-text"
+            onClick={() => cambiarVista("cart")}
+            title="Ver carrito"
+          >
+            <FontAwesomeIcon icon={faCartShopping} style={{ marginRight: 8 }} />
+            Total: {formatCLP(total)}
+          </Button>
+        </div>
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
@@ -86,11 +89,11 @@ const NavBarComponent = ({ cambiarVista }) => {
               id="basic-nav-dropdown"
               className="navlink-lg-white"
             >
-            <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
-            <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
-            <NavDropdown.Divider />
-            <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
+              <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
+              <NavDropdown.Divider />
+              <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
             </NavDropdown>
           </Nav>
         </Navbar.Collapse>
