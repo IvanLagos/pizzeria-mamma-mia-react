@@ -1,15 +1,18 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const VALID_EMAIL = "admin@pizzeria.cl";
 const VALID_PASS  = "123456";
 
-const LoginComponent = () => {
+const LoginPage = ({ setToken }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [tipo, setTipo] = useState("info");
 
   const [isLogged, setIsLogged] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -18,6 +21,7 @@ const LoginComponent = () => {
       setMensaje("Todos los campos son obligatorios");
       setTipo("danger");
       setIsLogged(false);
+      setToken(false);
       return;
     }
 
@@ -25,6 +29,7 @@ const LoginComponent = () => {
       setMensaje("La contraseña debe tener al menos 6 caracteres");
       setTipo("danger");
       setIsLogged(false);
+      setToken(false);
       return;
     }
 
@@ -32,22 +37,25 @@ const LoginComponent = () => {
       setMensaje("Usuario y contraseña correctos");
       setTipo("success");
       setIsLogged(true);
-
+      setToken(true);
+      navigate("/profile");
     } else {
       setMensaje("Usuario o contraseña incorrectos");
       setTipo("danger");
       setIsLogged(false);
+      setToken(false);
     }
   };
 
   const handleLogout = () => {
     setIsLogged(false);
+    setToken(false); 
     setMensaje("Sesión cerrada");
     setTipo("info");
   };
 
   return (
-        <div className="container mt-5" style={{ maxWidth: 420 }}>
+    <div className="container mt-5" style={{ maxWidth: 420 }}>
       <h2 className="mb-3">Iniciar Sesión</h2>
 
       {mensaje && (
@@ -97,4 +105,4 @@ const LoginComponent = () => {
   );
 };
 
-export default LoginComponent;
+export default LoginPage;

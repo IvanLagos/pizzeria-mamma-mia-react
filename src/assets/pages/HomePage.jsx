@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import HeaderComponent from "../header/HeaderComponent";
-import CardPizza from "../card/CardPizzaComponent";
+import HeaderComponent from "../components/header/HeaderComponent";
+import CardPizza from "../components/card/CardPizzaComponent";
 import { Container, Row, Col } from "react-bootstrap";
 
 const API_URL = "http://localhost:5000/api/pizzas";
 
-const HomeComponent = ({ onAddToCart }) => {
+const HomePage = ({ onAddToCart }) => {
   const [pizzas, setPizzas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -67,4 +67,4 @@ const HomeComponent = ({ onAddToCart }) => {
   );
 };
 
-export default HomeComponent;
+export default HomePage;

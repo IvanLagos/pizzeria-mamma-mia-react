@@ -1,5 +1,4 @@
-import React from "react";
-import { formatCLP } from "../../utils/formatCLP";
+import { formatCLP } from "../utils/formatCLP";
 
 export default function Cart({ items, onInc, onDec, total, onPay }) {
   return (
