@@ -98,7 +98,6 @@ function App() {
             }
           />
 
-          {/* ⬇ pasamos setToken al perfil para poder hacer logout ahí también */}
           <Route
             path="/profile"
             element={<ProfilePage setToken={setToken} />}

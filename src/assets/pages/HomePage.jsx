@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import HeaderComponent from "../components/header/HeaderComponent";
 import CardPizza from "../components/card/CardPizzaComponent";
 import { Container, Row, Col } from "react-bootstrap";
-
-const API_URL = "http://localhost:5000/api/pizzas";
+import { getPizzas } from "../../services/api";
 
 const HomePage = ({ onAddToCart }) => {
   const [pizzas, setPizzas] = useState([]);
@@ -13,13 +12,7 @@ const HomePage = ({ onAddToCart }) => {
   useEffect(() => {
     const fetchPizzas = async () => {
       try {
-        const res = await fetch(API_URL);
-
-        if (!res.ok) {
-          throw new Error("Error al obtener las pizzas");
-        }
-
-        const data = await res.json();
+        const data = await getPizzas();
         setPizzas(data);
       } catch (err) {
         console.error(err);
