@@ -1,6 +1,21 @@
+import { useNavigate } from "react-router-dom";
 import { formatCLP } from "../utils/formatCLP";
 
-export default function Cart({ items, onInc, onDec, total, onPay }) {
+export default function Cart({ items, onInc, onDec, total, onPay, token }) {
+  const navigate = useNavigate();
+
+  const isLoggedIn = token === true;
+
+  const handlePayClick = () => {
+    if (!isLoggedIn) {
+      alert("Debes iniciar sesión para pagar tu pedido 🍕");
+      navigate("/login");
+      return;
+    }
+
+    if (onPay) onPay();
+  };
+
   return (
     <div className="container mt-4" style={{ maxWidth: 720 }}>
       <h5 className="mb-3">Detalles del pedido:</h5>
@@ -18,7 +33,12 @@ export default function Cart({ items, onInc, onDec, total, onPay }) {
             <img
               src={p.img}
               alt={p.name}
-              style={{ width: 52, height: 52, objectFit: "cover", borderRadius: 8 }}
+              style={{
+                width: 52,
+                height: 52,
+                objectFit: "cover",
+                borderRadius: 8,
+              }}
             />
             <div className="d-flex flex-column">
               <span className="fw-semibold text-capitalize">{p.name}</span>
@@ -31,7 +51,9 @@ export default function Cart({ items, onInc, onDec, total, onPay }) {
               className="btn btn-sm btn-outline-secondary"
               onClick={() => onDec(p.id)}
               aria-label="Disminuir"
-            >–</button>
+            >
+              –
+            </button>
 
             <input
               value={p.count}
@@ -44,15 +66,21 @@ export default function Cart({ items, onInc, onDec, total, onPay }) {
               className="btn btn-sm btn-outline-secondary"
               onClick={() => onInc(p.id)}
               aria-label="Aumentar"
-            >+</button>
+            >
+              +
+            </button>
           </div>
         </div>
       ))}
 
       <div className="mt-4">
         <h5 className="fw-bold">Total: {formatCLP(total)}</h5>
-        <button className="btn btn-dark mt-2 mb-5 px-4" onClick={onPay} disabled={items.length === 0}>
-          Pagar
+        <button
+          className="btn btn-dark mt-2 mb-5 px-4"
+          onClick={handlePayClick}
+          disabled={items.length === 0}
+        >
+          {isLoggedIn ? "Pagar" : "Inicia sesión para pagar"}
         </button>
       </div>
     </div>

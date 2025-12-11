@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const VALID_EMAIL = "admin@pizzeria.cl";
-const VALID_PASS  = "123456";
+const VALID_PASS = "123456";
 
 const LoginPage = ({ setToken }) => {
   const [email, setEmail] = useState("");
@@ -38,6 +38,7 @@ const LoginPage = ({ setToken }) => {
       setTipo("success");
       setIsLogged(true);
       setToken(true);
+
       navigate("/profile");
     } else {
       setMensaje("Usuario o contraseña incorrectos");
@@ -49,7 +50,7 @@ const LoginPage = ({ setToken }) => {
 
   const handleLogout = () => {
     setIsLogged(false);
-    setToken(false); 
+    setToken(false);
     setMensaje("Sesión cerrada");
     setTipo("info");
   };

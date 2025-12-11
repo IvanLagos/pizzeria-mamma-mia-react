@@ -1,9 +1,30 @@
-import React from 'react';
+import React from "react";
 import PropTypes from "prop-types";
 import { Card, Button, Badge } from "react-bootstrap";
-import { formatCLP } from '../../utils/formatCLP';
+import { useNavigate } from "react-router-dom";
+import { formatCLP } from "../../utils/formatCLP";
 
-const CardPizzaComponent = ({ name, price, ingredients, img, desc, onAdd }) => {
+const CardPizzaComponent = ({
+  name,
+  price,
+  ingredients,
+  img,
+  desc,
+  onAdd,
+  isLoggedIn,
+}) => {
+  const navigate = useNavigate();
+
+  const handleAddClick = () => {
+    if (!isLoggedIn) {
+      alert("Debes iniciar sesión para añadir productos al carrito");
+      navigate("/login");
+      return;
+    }
+
+    if (onAdd) onAdd();
+  };
+
   return (
     <Card className="h-100 shadow-sm">
       <Card.Img variant="top" src={img} alt={name} />
@@ -17,15 +38,18 @@ const CardPizzaComponent = ({ name, price, ingredients, img, desc, onAdd }) => {
           </Card.Text>
         )}
 
-        <hr className='mb-2' style={{ margin: "2px 0" }} />
+        <hr className="mb-2" style={{ margin: "2px 0" }} />
 
-        <Card.Text className="mb-2 fw-semibold">
-          Ingredientes:
-        </Card.Text>
+        <Card.Text className="mb-2 fw-semibold">Ingredientes:</Card.Text>
 
-        <div className="mb-2" style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
+        <div
+          className="mb-2"
+          style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}
+        >
           {ingredients.map((ing, i) => (
-            <Badge key={i} bg="secondary">{ing}</Badge>
+            <Badge key={i} bg="secondary">
+              {ing}
+            </Badge>
           ))}
         </div>
 
@@ -36,11 +60,14 @@ const CardPizzaComponent = ({ name, price, ingredients, img, desc, onAdd }) => {
         </Card.Text>
 
         <div className="d-flex gap-2">
-          <Button variant="outline-dark">Ver más</Button>
-
-          <Button className='ms-auto' variant="dark" onClick={onAdd}>Añadir</Button>
+          <Button
+            className="ms-auto"
+            variant="dark"
+            onClick={handleAddClick}
+          >
+            {isLoggedIn ? "Añadir" : "Inicia sesión para comprar"}
+          </Button>
         </div>
-
       </Card.Body>
     </Card>
   );
@@ -52,7 +79,8 @@ CardPizzaComponent.propTypes = {
   ingredients: PropTypes.arrayOf(PropTypes.string).isRequired,
   img: PropTypes.string.isRequired,
   desc: PropTypes.string,
-  onAdd: PropTypes.func
+  onAdd: PropTypes.func,
+  isLoggedIn: PropTypes.bool,
 };
 
 export default CardPizzaComponent;

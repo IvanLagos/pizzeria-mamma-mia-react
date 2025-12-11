@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -12,10 +12,16 @@ import CartPage from "./assets/pages/CartPage.jsx";
 import ProfilePage from "./assets/pages/ProfilePage.jsx";
 import { formatCLP } from "./assets/utils/formatCLP";
 
-function App() {
+const PrivateRoute = ({ token, children }) => {
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+};
 
+function App() {
   const [token, setToken] = useState(() => {
-    return localStorage.getItem("token") === "true";
+    return localStorage.getItem("token") === "false";
   });
 
   useEffect(() => {
@@ -51,17 +57,13 @@ function App() {
 
   const inc = (id) =>
     setCart((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, count: p.count + 1 } : p
-      )
+      prev.map((p) => (p.id === id ? { ...p, count: p.count + 1 } : p))
     );
 
   const dec = (id) =>
     setCart((prev) =>
       prev
-        .map((p) =>
-          p.id === id ? { ...p, count: p.count - 1 } : p
-        )
+        .map((p) => (p.id === id ? { ...p, count: p.count - 1 } : p))
         .filter((p) => p.count > 0)
     );
 
@@ -71,14 +73,18 @@ function App() {
 
   return (
     <div className="app-container">
-
       <NavBarComponent total={total} token={token} setToken={setToken} />
 
       <div className="content-wrapper">
         <Routes>
           <Route
             path="/"
-            element={<HomePage onAddToCart={addToCart} />}
+            element={
+              <HomePage
+                onAddToCart={addToCart}
+                token={token}
+              />
+            }
           />
 
           <Route path="/register" element={<RegisterPage />} />
@@ -88,19 +94,26 @@ function App() {
           <Route
             path="/cart"
             element={
-              <CartPage
-                items={cart}
-                onInc={inc}
-                onDec={dec}
-                total={total}
-                onPay={handlePay}
-              />
+              <PrivateRoute token={token}>
+                <CartPage
+                  items={cart}
+                  onInc={inc}
+                  onDec={dec}
+                  total={total}
+                  onPay={handlePay}
+                  token={token}
+                />
+              </PrivateRoute>
             }
           />
 
           <Route
             path="/profile"
-            element={<ProfilePage setToken={setToken} />}
+            element={
+              <PrivateRoute token={token}>
+                <ProfilePage setToken={setToken} />
+              </PrivateRoute>
+            }
           />
 
           <Route

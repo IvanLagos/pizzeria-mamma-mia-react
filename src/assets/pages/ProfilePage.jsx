@@ -6,7 +6,7 @@ export default function ProfilePage({ setToken }) {
 
   const handleLogout = () => {
     setToken(false);
-    alert("Sesion cerrada");
+    alert("Sesión cerrada");
     navigate("/");
   };
 

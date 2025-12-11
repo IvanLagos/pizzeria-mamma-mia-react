@@ -4,7 +4,7 @@ import CardPizza from "../components/card/CardPizzaComponent";
 import { Container, Row, Col } from "react-bootstrap";
 import { getPizzas } from "../../services/api";
 
-const HomePage = ({ onAddToCart }) => {
+const HomePage = ({ onAddToCart, token }) => {
   const [pizzas, setPizzas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,7 +30,6 @@ const HomePage = ({ onAddToCart }) => {
       <HeaderComponent />
 
       <Container className="py-4">
-
         {loading && <p className="text-center">Cargando pizzas...</p>}
 
         {error && (
@@ -49,6 +48,7 @@ const HomePage = ({ onAddToCart }) => {
                   ingredients={p.ingredients}
                   img={p.img}
                   desc={p.desc}
+                  isLoggedIn={token}
                   onAdd={() => onAddToCart(p)}
                 />
               </Col>
