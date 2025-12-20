@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 
 import NavBarComponent from "./assets/components/navbar/NavBarComponent";
@@ -14,7 +14,7 @@ import Pizza from "./assets/pages/Pizza";
 import { useUser } from "./contexts/UserContext";
 
 function App() {
-  const { token } = useUser();
+  const { isAuthenticated, getProfile, logout } = useUser();
 
   // ✅ Carrito centralizado como antes
   const [cart, setCart] = useState([]);
@@ -39,6 +39,22 @@ function App() {
     });
   };
 
+  // ✅ Al iniciar: validar token guardado.
+  // Si es inválido/expirado → cerrar sesión para evitar "sesión fantasma"
+  useEffect(() => {
+    const validateSession = async () => {
+      if (!isAuthenticated) return;
+
+      const r = await getProfile();
+      if (!r.ok) {
+        logout();
+      }
+    };
+
+    validateSession();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="d-flex flex-column min-vh-100">
       <NavBarComponent total={total} />
@@ -49,18 +65,18 @@ function App() {
 
           <Route
             path="/login"
-            element={token ? <Navigate to="/" /> : <LoginPage />}
+            element={isAuthenticated ? <Navigate to="/" /> : <LoginPage />}
           />
 
           <Route
             path="/register"
-            element={token ? <Navigate to="/" /> : <RegisterPage />}
+            element={isAuthenticated ? <Navigate to="/" /> : <RegisterPage />}
           />
 
           <Route
             path="/cart"
             element={
-              token ? (
+              isAuthenticated ? (
                 <CartPage cart={cart} setCart={setCart} />
               ) : (
                 <Navigate to="/login" />
@@ -70,10 +86,9 @@ function App() {
 
           <Route
             path="/profile"
-            element={token ? <ProfilePage /> : <Navigate to="/login" />}
+            element={isAuthenticated ? <ProfilePage /> : <Navigate to="/login" />}
           />
 
-          {/* ✅ Detalle; si quieres permitir agregar desde detalle */}
           <Route path="/pizza/:id" element={<Pizza onAddToCart={onAddToCart} />} />
         </Routes>
       </main>
