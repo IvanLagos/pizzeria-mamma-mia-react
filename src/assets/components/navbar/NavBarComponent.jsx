@@ -1,9 +1,9 @@
-import { Nav, Navbar, Container, Button } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
-import logoTienda from '../../../assets/imgs/logoTienda.png';
-import '../../../App.css';
-import { formatCLP } from '../../utils/formatCLP';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Nav, Navbar, Container, Button } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import logoTienda from "../../../assets/imgs/logoTienda.png";
+import "../../../App.css";
+import { formatCLP } from "../../utils/formatCLP";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faLock,
   faLockOpen,
@@ -11,10 +11,14 @@ import {
   faRightFromBracket,
   faRightToBracket,
   faUserPlus,
-  faCartShopping
-} from '@fortawesome/free-solid-svg-icons';
+  faCartShopping,
+} from "@fortawesome/free-solid-svg-icons";
 
-const NavBarComponent = ({ total = 0, token = false, setToken }) => {
+import { useUser } from "../../../contexts/UserContext";
+
+const NavBarComponent = ({ total = 0 }) => {
+  const { token, logout } = useUser();
+
   return (
     <Navbar
       expand="lg"
@@ -24,11 +28,11 @@ const NavBarComponent = ({ total = 0, token = false, setToken }) => {
       sticky="top"
     >
       <Container>
-
-        <Navbar.Brand as={Link} to="/" className="brand" style={{ cursor: 'pointer' }}>
+        <Navbar.Brand as={Link} to="/" className="brand" style={{ cursor: "pointer" }}>
           <img src={logoTienda} width="50px" alt="logo" />
         </Navbar.Brand>
 
+        {/* ✅ SIEMPRE visible (como antes) para no romper el layout */}
         <div className="d-flex order-lg-1 ms-auto me-2">
           <Button
             as={Link}
@@ -44,20 +48,19 @@ const NavBarComponent = ({ total = 0, token = false, setToken }) => {
 
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-
-          <Nav className="ms-auto align-items-lg-center" style={{ gap: '0.5rem' }}>
+          <Nav className="ms-auto align-items-lg-center" style={{ gap: "0.5rem" }}>
             {token ? (
               <>
                 <Nav.Link as={Link} to="/profile" className="navlink-lg-white">
                   <FontAwesomeIcon icon={faUser} style={{ marginRight: 8 }} />
                   Profile
                 </Nav.Link>
-                
+
                 <Nav.Link
                   as={Link}
                   to="/"
                   className="navlink-lg-white"
-                  onClick={() => setToken(false)}
+                  onClick={logout}
                 >
                   <FontAwesomeIcon icon={faRightFromBracket} style={{ marginRight: 8 }} />
                   Logout
@@ -95,9 +98,7 @@ const NavBarComponent = ({ total = 0, token = false, setToken }) => {
               </>
             )}
           </Nav>
-
         </Navbar.Collapse>
-
       </Container>
     </Navbar>
   );

@@ -1,86 +1,87 @@
-import React from "react";
-import PropTypes from "prop-types";
 import { Card, Button, Badge } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { formatCLP } from "../../utils/formatCLP";
+import { useUser } from "../../../contexts/UserContext";
+import { capitalize } from "../../utils/capitalize";
 
-const CardPizzaComponent = ({
-  name,
-  price,
-  ingredients,
-  img,
-  desc,
-  onAdd,
-  isLoggedIn,
-}) => {
+const CardPizzaComponent = ({ pizza, onAddToCart }) => {
   const navigate = useNavigate();
+  const { token } = useUser();
 
-  const handleAddClick = () => {
-    if (!isLoggedIn) {
-      alert("Debes iniciar sesión para añadir productos al carrito");
+  const handleAdd = () => {
+    if (!token) {
       navigate("/login");
       return;
     }
 
-    if (onAdd) onAdd();
+    if (typeof onAddToCart === "function") {
+      onAddToCart(pizza);
+    }
   };
 
   return (
     <Card className="h-100 shadow-sm">
-      <Card.Img variant="top" src={img} alt={name} />
+      <Card.Img
+        variant="top"
+        src={pizza.img}
+        alt={pizza.name}
+        style={{ height: 220, objectFit: "cover" }}
+      />
 
       <Card.Body className="d-flex flex-column">
-        <Card.Title className="mb-2 text-capitalize">{name}</Card.Title>
+        {/* ✅ Título en Title Case */}
+        <Card.Title className="fw-bold mb-2">
+          {capitalize(pizza.name)}
+        </Card.Title>
 
-        {desc && (
-          <Card.Text className="small text-muted" style={{ lineHeight: 1.25 }}>
-            {desc}
-          </Card.Text>
-        )}
+        <hr />
 
-        <hr className="mb-2" style={{ margin: "2px 0" }} />
+        {/* ❌ Sin descripción */}
 
-        <Card.Text className="mb-2 fw-semibold">Ingredientes:</Card.Text>
+        <div className="mb-2">
+          <div className="fw-semibold mb-2">Ingredientes:</div>
 
-        <div
-          className="mb-2"
-          style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}
-        >
-          {ingredients.map((ing, i) => (
-            <Badge key={i} bg="secondary">
-              {ing}
-            </Badge>
-          ))}
+          <div className="d-flex flex-wrap gap-2">
+            {(pizza.ingredients || []).map((ing, i) => (
+              <Badge
+                key={`${ing}-${i}`}
+                pill
+                bg="secondary"
+                className="fw-normal"
+                style={{ textTransform: "lowercase" }}
+              >
+                {ing}
+              </Badge>
+            ))}
+          </div>
         </div>
 
-        <Card.Text className="mt-auto">
-          <span style={{ fontSize: "1.1rem", fontWeight: 700 }}>
-            Precio: {formatCLP(price)}
-          </span>
-        </Card.Text>
+        <div className="mt-auto">
+          <div className="fw-bold mb-3">
+            Precio: {formatCLP(pizza.price)}
+          </div>
 
-        <div className="d-flex gap-2">
-          <Button
-            className="ms-auto"
-            variant="dark"
-            onClick={handleAddClick}
-          >
-            {isLoggedIn ? "Añadir" : "Inicia sesión para comprar"}
-          </Button>
+          <div className="d-flex justify-content-between gap-2">
+            <Button
+              variant="outline-dark"
+              className="w-50"
+              onClick={() => navigate(`/pizza/${pizza.id}`)}
+            >
+              Ver más
+            </Button>
+
+            <Button
+              variant="dark"
+              className="w-50"
+              onClick={handleAdd}
+            >
+              Añadir
+            </Button>
+          </div>
         </div>
       </Card.Body>
     </Card>
   );
-};
-
-CardPizzaComponent.propTypes = {
-  name: PropTypes.string.isRequired,
-  price: PropTypes.number.isRequired,
-  ingredients: PropTypes.arrayOf(PropTypes.string).isRequired,
-  img: PropTypes.string.isRequired,
-  desc: PropTypes.string,
-  onAdd: PropTypes.func,
-  isLoggedIn: PropTypes.bool,
 };
 
 export default CardPizzaComponent;

@@ -1,107 +1,121 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Alert, Button, Card, Form } from "react-bootstrap";
+import { useUser } from "../../contexts/UserContext";
 
 const VALID_EMAIL = "admin@pizzeria.cl";
 const VALID_PASS = "123456";
 
-const LoginPage = ({ setToken }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [mensaje, setMensaje] = useState("");
-  const [tipo, setTipo] = useState("info");
-
-  const [isLogged, setIsLogged] = useState(false);
-
+const LoginPage = () => {
   const navigate = useNavigate();
+  const { token, login } = useUser();
+
+  const [email, setEmail] = useState(VALID_EMAIL);
+  const [password, setPassword] = useState(VALID_PASS);
+
+  const [mensaje, setMensaje] = useState("");
+  const [tipo, setTipo] = useState("info"); // "success" | "danger" | "info"
+  const [loading, setLoading] = useState(false);
+
+  // ✅ Si ya hay sesión, no debería poder ver login
+  useEffect(() => {
+    if (token) navigate("/");
+  }, [token, navigate]);
+
+  const isValidEmail = (value) => /\S+@\S+\.\S+/.test(value);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!email || !password) {
-      setMensaje("Todos los campos son obligatorios");
+    const emailTrim = email.trim();
+
+    // Validaciones
+    if (!emailTrim || !password) {
       setTipo("danger");
-      setIsLogged(false);
-      setToken(false);
+      setMensaje("Completa todos los campos.");
+      return;
+    }
+
+    if (!isValidEmail(emailTrim)) {
+      setTipo("danger");
+      setMensaje("Ingresa un correo válido.");
       return;
     }
 
     if (password.length < 6) {
-      setMensaje("La contraseña debe tener al menos 6 caracteres");
       setTipo("danger");
-      setIsLogged(false);
-      setToken(false);
+      setMensaje("La contraseña debe tener al menos 6 caracteres.");
       return;
     }
 
-    if (email === VALID_EMAIL && password === VALID_PASS) {
-      setMensaje("Usuario y contraseña correctos");
-      setTipo("success");
-      setIsLogged(true);
-      setToken(true);
+    setLoading(true);
 
-      navigate("/profile");
-    } else {
-      setMensaje("Usuario o contraseña incorrectos");
-      setTipo("danger");
-      setIsLogged(false);
-      setToken(false);
-    }
-  };
+    // Simulación de “login”
+    setTimeout(() => {
+      if (emailTrim === VALID_EMAIL && password === VALID_PASS) {
+        setTipo("success");
+        setMensaje("✅ Usuario correcto. Sesión iniciada.");
 
-  const handleLogout = () => {
-    setIsLogged(false);
-    setToken(false);
-    setMensaje("Sesión cerrada");
-    setTipo("info");
+        // ✅ Activa token global + localStorage
+        login();
+
+        // ✅ navega al home
+        navigate("/");
+      } else {
+        setTipo("danger");
+        setMensaje("❌ Credenciales incorrectas.");
+      }
+
+      setLoading(false);
+    }, 350);
   };
 
   return (
-    <div className="container mt-5" style={{ maxWidth: 420 }}>
-      <h2 className="mb-3">Iniciar Sesión</h2>
+    <div className="container mt-5 mb-5" style={{ maxWidth: 520 }}>
+      <h1 className="text-center mb-4">Iniciar Sesión</h1>
 
       {mensaje && (
-        <p className={`alert alert-${tipo} mb-3`} style={{ fontWeight: 600 }}>
+        <Alert variant={tipo} className="text-center">
           {mensaje}
-        </p>
+        </Alert>
       )}
 
-      {!isLogged ? (
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">Email:</label>
-            <input
-              type="email"
-              className="form-control"
-              placeholder="admin@pizzeria.cl"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="username"
-            />
-          </div>
+      <Card className="shadow-sm">
+        <Card.Body>
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3" controlId="loginEmail">
+              <Form.Label>Email:</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="admin@pizzeria.cl"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="username"
+              />
+            </Form.Group>
 
-          <div className="mb-3">
-            <label className="form-label">Contraseña:</label>
-            <input
-              type="password"
-              className="form-control"
-              placeholder="123456"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-            />
-          </div>
+            <Form.Group className="mb-4" controlId="loginPassword">
+              <Form.Label>Contraseña:</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="123456"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+              />
+            </Form.Group>
 
-          <button type="submit" className="btn btn-primary w-100">
-            Iniciar Sesión
-          </button>
-        </form>
-      ) : (
-        <div className="d-grid gap-2">
-          <button className="btn btn-secondary" onClick={handleLogout}>
-            Cerrar sesión
-          </button>
-        </div>
-      )}
+            <Button
+              type="submit"
+              className="w-100"
+              variant="primary"
+              disabled={loading}
+            >
+              {loading ? "Ingresando..." : "Iniciar Sesión"}
+            </Button>
+          </Form>
+        </Card.Body>
+      </Card>
     </div>
   );
 };

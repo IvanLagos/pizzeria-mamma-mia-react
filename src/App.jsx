@@ -1,33 +1,22 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import "./App.css";
-import "bootstrap/dist/css/bootstrap.min.css";
 
 import NavBarComponent from "./assets/components/navbar/NavBarComponent";
 import FooterComponent from "./assets/components/footer/FooterComponent";
-import HomePage from "./assets/pages/HomePage.jsx";
-import RegisterPage from "./assets/pages/RegisterPage.jsx";
-import LoginPage from "./assets/pages/LoginPage.jsx";
-import CartPage from "./assets/pages/CartPage.jsx";
-import ProfilePage from "./assets/pages/ProfilePage.jsx";
-import { formatCLP } from "./assets/utils/formatCLP";
 
-const PrivateRoute = ({ token, children }) => {
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-  return children;
-};
+import HomePage from "./assets/pages/HomePage";
+import LoginPage from "./assets/pages/LoginPage";
+import RegisterPage from "./assets/pages/RegisterPage";
+import CartPage from "./assets/pages/CartPage";
+import ProfilePage from "./assets/pages/ProfilePage";
+import Pizza from "./assets/pages/Pizza";
+
+import { useUser } from "./contexts/UserContext";
 
 function App() {
-  const [token, setToken] = useState(() => {
-    return localStorage.getItem("token") === "false";
-  });
+  const { token } = useUser();
 
-  useEffect(() => {
-    localStorage.setItem("token", token ? "true" : "false");
-  }, [token]);
-
+  // ✅ Carrito centralizado como antes
   const [cart, setCart] = useState([]);
 
   const total = useMemo(
@@ -35,97 +24,59 @@ function App() {
     [cart]
   );
 
-  const addToCart = (pizza) => {
+  // ✅ Agregar al carrito (si existe, suma cantidad)
+  const onAddToCart = (pizza) => {
     setCart((prev) => {
-      const found = prev.find((x) => x.id === pizza.id);
-      if (found)
-        return prev.map((x) =>
-          x.id === pizza.id ? { ...x, count: x.count + 1 } : x
+      const found = prev.find((p) => p.id === pizza.id);
+
+      if (found) {
+        return prev.map((p) =>
+          p.id === pizza.id ? { ...p, count: p.count + 1 } : p
         );
-      return [
-        ...prev,
-        {
-          id: pizza.id,
-          name: pizza.name,
-          price: pizza.price,
-          count: 1,
-          img: pizza.img,
-        },
-      ];
+      }
+
+      return [...prev, { ...pizza, count: 1 }];
     });
   };
 
-  const inc = (id) =>
-    setCart((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, count: p.count + 1 } : p))
-    );
-
-  const dec = (id) =>
-    setCart((prev) =>
-      prev
-        .map((p) => (p.id === id ? { ...p, count: p.count - 1 } : p))
-        .filter((p) => p.count > 0)
-    );
-
-  const handlePay = () => {
-    alert(`¡Gracias por tu compra! Estás pagando ${formatCLP(total)}.`);
-  };
-
   return (
-    <div className="app-container">
-      <NavBarComponent total={total} token={token} setToken={setToken} />
+    <div className="d-flex flex-column min-vh-100">
+      <NavBarComponent total={total} />
 
-      <div className="content-wrapper">
+      <main className="flex-grow-1">
         <Routes>
+          <Route path="/" element={<HomePage onAddToCart={onAddToCart} />} />
+
           <Route
-            path="/"
-            element={
-              <HomePage
-                onAddToCart={addToCart}
-                token={token}
-              />
-            }
+            path="/login"
+            element={token ? <Navigate to="/" /> : <LoginPage />}
           />
 
-          <Route path="/register" element={<RegisterPage />} />
-
-          <Route path="/login" element={<LoginPage setToken={setToken} />} />
+          <Route
+            path="/register"
+            element={token ? <Navigate to="/" /> : <RegisterPage />}
+          />
 
           <Route
             path="/cart"
             element={
-              <PrivateRoute token={token}>
-                <CartPage
-                  items={cart}
-                  onInc={inc}
-                  onDec={dec}
-                  total={total}
-                  onPay={handlePay}
-                  token={token}
-                />
-              </PrivateRoute>
+              token ? (
+                <CartPage cart={cart} setCart={setCart} />
+              ) : (
+                <Navigate to="/login" />
+              )
             }
           />
 
           <Route
             path="/profile"
-            element={
-              <PrivateRoute token={token}>
-                <ProfilePage setToken={setToken} />
-              </PrivateRoute>
-            }
+            element={token ? <ProfilePage /> : <Navigate to="/login" />}
           />
 
-          <Route
-            path="*"
-            element={
-              <h2 className="text-center mt-5">
-                404 - Página no encontrada
-              </h2>
-            }
-          />
+          {/* ✅ Detalle; si quieres permitir agregar desde detalle */}
+          <Route path="/pizza/:id" element={<Pizza onAddToCart={onAddToCart} />} />
         </Routes>
-      </div>
+      </main>
 
       <FooterComponent />
     </div>

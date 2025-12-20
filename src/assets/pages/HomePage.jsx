@@ -1,56 +1,56 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import HeaderComponent from "../components/header/HeaderComponent";
 import CardPizza from "../components/card/CardPizzaComponent";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Alert, Spinner } from "react-bootstrap";
 import { getPizzas } from "../../services/api";
 
-const HomePage = ({ onAddToCart, token }) => {
+const HomePage = ({ onAddToCart }) => {
   const [pizzas, setPizzas] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    const fetchPizzas = async () => {
+    const load = async () => {
       try {
+        setLoading(true);
+        setError("");
         const data = await getPizzas();
-        setPizzas(data);
+
+        // ✅ Soporta ambos formatos: array directo o { pizzas: [] }
+        const list = Array.isArray(data) ? data : data?.pizzas || [];
+        setPizzas(list);
       } catch (err) {
-        console.error(err);
-        setError("No se pudo cargar las pizzas");
+        setError(err?.message || "Error al cargar pizzas");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPizzas();
+    load();
   }, []);
 
   return (
     <>
       <HeaderComponent />
 
-      <Container className="py-4">
-        {loading && <p className="text-center">Cargando pizzas...</p>}
+      <Container className="mt-4 mb-5">
+        {loading && (
+          <div className="d-flex justify-content-center py-5">
+            <Spinner animation="border" role="status" />
+          </div>
+        )}
 
-        {error && (
-          <p className="text-center text-danger" style={{ fontWeight: 600 }}>
+        {!loading && error && (
+          <Alert variant="danger" className="text-center">
             {error}
-          </p>
+          </Alert>
         )}
 
         {!loading && !error && (
-          <Row xs={1} md={2} lg={3} className="g-4 mb-4">
-            {pizzas.map((p) => (
-              <Col key={p.id}>
-                <CardPizza
-                  name={p.name}
-                  price={p.price}
-                  ingredients={p.ingredients}
-                  img={p.img}
-                  desc={p.desc}
-                  isLoggedIn={token}
-                  onAdd={() => onAddToCart(p)}
-                />
+          <Row className="g-4">
+            {pizzas.map((pizza) => (
+              <Col key={pizza.id} xs={12} sm={6} lg={4}>
+                <CardPizza pizza={pizza} onAddToCart={onAddToCart} />
               </Col>
             ))}
           </Row>
