@@ -10,7 +10,6 @@ import { UserProvider } from "./contexts/UserContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    {/* ✅ En dev será "/", en build GH Pages será "/pizzeria-mamma-mia-react/" */}
     <BrowserRouter basename={import.meta.env.BASE_URL}>
       <UserProvider>
         <App />
