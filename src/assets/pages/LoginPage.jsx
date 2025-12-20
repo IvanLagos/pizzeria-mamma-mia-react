@@ -3,80 +3,70 @@ import { useNavigate } from "react-router-dom";
 import { Alert, Button, Card, Form } from "react-bootstrap";
 import { useUser } from "../../contexts/UserContext";
 
-const VALID_EMAIL = "admin@pizzeria.cl";
-const VALID_PASS = "123456";
-
 const LoginPage = () => {
   const navigate = useNavigate();
-  const { token, login } = useUser();
+  const { isAuthenticated, login, loadingUser, userError, clearUserError } = useUser();
 
-  const [email, setEmail] = useState(VALID_EMAIL);
-  const [password, setPassword] = useState(VALID_PASS);
-
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [mensaje, setMensaje] = useState("");
-  const [tipo, setTipo] = useState("info"); // "success" | "danger" | "info"
-  const [loading, setLoading] = useState(false);
+  const [tipo, setTipo] = useState("info");
 
-  // ✅ Si ya hay sesión, no debería poder ver login
   useEffect(() => {
-    if (token) navigate("/");
-  }, [token, navigate]);
+    clearUserError();
+    setMensaje("");
+
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) navigate("/");
+  }, [isAuthenticated, navigate]);
 
   const isValidEmail = (value) => /\S+@\S+\.\S+/.test(value);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    clearUserError();
+    setMensaje("");
 
     const emailTrim = email.trim();
 
-    // Validaciones
     if (!emailTrim || !password) {
       setTipo("danger");
       setMensaje("Completa todos los campos.");
       return;
     }
-
     if (!isValidEmail(emailTrim)) {
       setTipo("danger");
       setMensaje("Ingresa un correo válido.");
       return;
     }
-
     if (password.length < 6) {
       setTipo("danger");
       setMensaje("La contraseña debe tener al menos 6 caracteres.");
       return;
     }
 
-    setLoading(true);
+    const result = await login({ email: emailTrim, password });
 
-    // Simulación de “login”
-    setTimeout(() => {
-      if (emailTrim === VALID_EMAIL && password === VALID_PASS) {
-        setTipo("success");
-        setMensaje("✅ Usuario correcto. Sesión iniciada.");
-
-        // ✅ Activa token global + localStorage
-        login();
-
-        // ✅ navega al home
-        navigate("/");
-      } else {
-        setTipo("danger");
-        setMensaje("❌ Credenciales incorrectas.");
-      }
-
-      setLoading(false);
-    }, 350);
+    if (result.ok) {
+      setTipo("success");
+      setMensaje("✅ Sesión iniciada correctamente.");
+      navigate("/");
+    } else {
+      setTipo("danger");
+      setMensaje(result.message || "❌ No se pudo iniciar sesión.");
+    }
   };
 
   return (
     <div className="container mt-5 mb-5" style={{ maxWidth: 520 }}>
       <h1 className="text-center mb-4">Iniciar Sesión</h1>
 
-      {mensaje && (
-        <Alert variant={tipo} className="text-center">
-          {mensaje}
+      {(mensaje || userError) && (
+        <Alert variant={mensaje ? tipo : "danger"} className="text-center">
+          {mensaje || userError}
         </Alert>
       )}
 
@@ -87,7 +77,7 @@ const LoginPage = () => {
               <Form.Label>Email:</Form.Label>
               <Form.Control
                 type="email"
-                placeholder="admin@pizzeria.cl"
+                placeholder="test@example.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 autoComplete="username"
@@ -98,20 +88,15 @@ const LoginPage = () => {
               <Form.Label>Contraseña:</Form.Label>
               <Form.Control
                 type="password"
-                placeholder="123456"
+                placeholder="******"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="current-password"
               />
             </Form.Group>
 
-            <Button
-              type="submit"
-              className="w-100"
-              variant="primary"
-              disabled={loading}
-            >
-              {loading ? "Ingresando..." : "Iniciar Sesión"}
+            <Button type="submit" className="w-100" variant="primary" disabled={loadingUser}>
+              {loadingUser ? "Ingresando..." : "Iniciar Sesión"}
             </Button>
           </Form>
         </Card.Body>

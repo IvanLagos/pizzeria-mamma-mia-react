@@ -32,7 +32,6 @@ const NavBarComponent = ({ total = 0 }) => {
           <img src={logoTienda} width="50px" alt="logo" />
         </Navbar.Brand>
 
-        {/* ✅ SIEMPRE visible (como antes) para no romper el layout */}
         <div className="d-flex order-lg-1 ms-auto me-2">
           <Button
             as={Link}

@@ -84,13 +84,11 @@ const Pizza = ({ onAddToCart }) => {
         </Col>
 
         <Col md={6}>
-          {/* Título */}
+
           <h2 className="fw-bold mb-3">{capitalize(pizza.name)}</h2>
 
-          {/* Descripción solo en detalle */}
           <p className="text-muted">{pizza.desc}</p>
 
-          {/* Ingredientes */}
           <div className="mb-3">
             <div className="fw-semibold mb-2">Ingredientes:</div>
 
@@ -109,12 +107,10 @@ const Pizza = ({ onAddToCart }) => {
             </div>
           </div>
 
-          {/* Precio */}
           <h4 className="fw-bold mb-4">
             Precio: {formatCLP(pizza.price)}
           </h4>
 
-          {/* Botones */}
           <div className="d-flex gap-3">
             <Button variant="dark" onClick={handleAdd}>
               Añadir al carrito

@@ -29,14 +29,12 @@ const CardPizzaComponent = ({ pizza, onAddToCart }) => {
       />
 
       <Card.Body className="d-flex flex-column">
-        {/* ✅ Título en Title Case */}
+
         <Card.Title className="fw-bold mb-2">
           {capitalize(pizza.name)}
         </Card.Title>
 
         <hr />
-
-        {/* ❌ Sin descripción */}
 
         <div className="mb-2">
           <div className="fw-semibold mb-2">Ingredientes:</div>

@@ -1,13 +1,16 @@
 import { useMemo, useState } from "react";
-import { Container, Button, ListGroup, Alert, Modal } from "react-bootstrap";
+import { Container, Button, ListGroup, Alert, Modal, Spinner } from "react-bootstrap";
 import { formatCLP } from "../utils/formatCLP";
 import { useUser } from "../../contexts/UserContext";
 
 const CartPage = ({ cart = [], setCart }) => {
-  const { token } = useUser();
+  const { isAuthenticated, checkout } = useUser();
 
   const [showReceipt, setShowReceipt] = useState(false);
   const [receipt, setReceipt] = useState(null);
+
+  const [paying, setPaying] = useState(false);
+  const [payError, setPayError] = useState("");
 
   const total = useMemo(
     () => cart.reduce((acc, p) => acc + p.price * p.count, 0),
@@ -32,10 +35,20 @@ const CartPage = ({ cart = [], setCart }) => {
     );
   };
 
-  const handlePay = () => {
-    if (!token || isEmpty) return;
+  const handlePay = async () => {
+    if (!isAuthenticated || isEmpty) return;
 
-    // ✅ Crear boleta simple
+    setPaying(true);
+    setPayError("");
+
+    const result = await checkout(cart);
+
+    if (!result.ok) {
+      setPayError(result.message || "No se pudo procesar la compra.");
+      setPaying(false);
+      return;
+    }
+
     const now = new Date();
     const items = cart.map((p) => ({
       id: p.id,
@@ -48,7 +61,7 @@ const CartPage = ({ cart = [], setCart }) => {
     const totalItems = items.reduce((acc, it) => acc + it.count, 0);
 
     setReceipt({
-      date: now.toLocaleString("es-CL"),
+      date: now.toLocaleString("es-CL", { dateStyle: "short", timeStyle: "short" }),
       items,
       totalItems,
       total,
@@ -56,8 +69,9 @@ const CartPage = ({ cart = [], setCart }) => {
 
     setShowReceipt(true);
 
-    // ✅ Vaciar carrito después de comprar
     if (typeof setCart === "function") setCart([]);
+
+    setPaying(false);
   };
 
   return (
@@ -66,7 +80,7 @@ const CartPage = ({ cart = [], setCart }) => {
 
       {isEmpty ? (
         <Alert variant="secondary" className="text-center">
-          🛒 Tu carrito está vacío. ¡Agrega una pizza!
+           Tu carrito está vacío. ¡Agrega una pizza!
         </Alert>
       ) : (
         <>
@@ -116,21 +130,37 @@ const CartPage = ({ cart = [], setCart }) => {
             <h4 className="m-0">Total: {formatCLP(total)}</h4>
 
             <div className="text-end">
-              {!token && (
+              {!isAuthenticated && (
                 <div className="text-danger small mb-2">
                   Debes iniciar sesión para pagar
                 </div>
               )}
 
-              <Button variant="dark" disabled={!token || isEmpty} onClick={handlePay}>
-                Pagar
+              {payError && (
+                <div className="text-danger small mb-2">
+                  {payError}
+                </div>
+              )}
+
+              <Button
+                variant="dark"
+                disabled={!isAuthenticated || isEmpty || paying}
+                onClick={handlePay}
+              >
+                {paying ? (
+                  <>
+                    <Spinner animation="border" size="sm" className="me-2" />
+                    Procesando...
+                  </>
+                ) : (
+                  "Pagar"
+                )}
               </Button>
             </div>
           </div>
         </>
       )}
 
-      {/* ✅ Modal Boleta */}
       <Modal show={showReceipt} onHide={() => setShowReceipt(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>🧾 Boleta</Modal.Title>
@@ -171,7 +201,7 @@ const CartPage = ({ cart = [], setCart }) => {
               </div>
 
               <Alert variant="success" className="mt-3 text-center mb-0">
-                ✅ ¡Compra realizada con éxito!
+               ¡Compra realizada con éxito!
               </Alert>
             </>
           )}

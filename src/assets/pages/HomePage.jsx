@@ -15,8 +15,6 @@ const HomePage = ({ onAddToCart }) => {
         setLoading(true);
         setError("");
         const data = await getPizzas();
-
-        // ✅ Soporta ambos formatos: array directo o { pizzas: [] }
         const list = Array.isArray(data) ? data : data?.pizzas || [];
         setPizzas(list);
       } catch (err) {
